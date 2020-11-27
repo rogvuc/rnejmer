@@ -28,7 +28,7 @@ KNOWN BUGS
 -
 * Cant work with files that have new line in a file name
 * **IMPORTANT** Exchanging file names in the same dir is NOT WORKING AND ENDS UP DELETING ONE OF THE FILES
-for exsample having files foo and bar in the same folder and renaming foo to bar and bar too foo results in one of them being deleted.
+for exsample having files foo and bar in the same folder and renaming foo to bar and bar to foo results in one of them being deleted.
 
 INSTALLING
 -
