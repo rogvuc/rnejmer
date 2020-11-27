@@ -34,4 +34,4 @@ INSTALLING
 3. Make it executable
 
 #### DEB PACAGE
-If you are on Ubuntu or Ubuntu based distro(mint, pop_os, etc..) you can just download and install provided deb package. It will install rnejmer and take care of a dependency
+If you are on Ubuntu or Ubuntu based distro(mint, pop_os, etc..) you can just download and install provided [deb package](https://github.com/rogvuc/rnejmer/releases). It will install rnejmer and take care of a dependency
