@@ -1,6 +1,6 @@
 WHAT IS RNEJMER
 -
-Rnejmer is batch file renaming tool written in python. It sends file names to any text editor and lets you rename your files from there with all advanced futures that of a text editor (find all, replace all, regex, etc.).
+Rnejmer is batch file renaming tool written in python. It sends file names to any text editor and lets you rename your files from there with all advanced futures that of a text editor (find all, replace all, regex, etc.). This is really early version and it is NOT MEANT for production use or use on important data.
 
  USAGE
 -
@@ -22,7 +22,13 @@ rename all files in a dir boo using xed editor:
 
 rename all files in a dir bar using default gui editor:
 
-	rnejmer -g /dir/path/bar 
+	rnejmer -g /dir/path/bar
+
+KNOWN BUGS
+-
+* Cant work with files that have new line in a file name
+* **IMPORTANT** Exchanging file names in the same dir is NOT WORKING AND ENDS UP DELETING ONE OF THE FILES
+for exsample having files foo and bar in the same folder and renaming foo to bar and bar too foo results in one of them being deleted.
 
 INSTALLING
 -
