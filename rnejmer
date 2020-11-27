@@ -1,0 +1,111 @@
+#!/usr/bin/env python3
+
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#  Copyright 2020 Goran Vuckovic
+
+import argparse
+import os
+import subprocess
+import tempfile
+
+from natsort import natsorted
+
+# Setting up command line arguments
+parser = argparse.ArgumentParser(description="Renames files using a text editor")
+parser.add_argument("filepath", nargs='?', type=str, default=os.getcwd(), help="path of a folder")
+parser.add_argument('-e', '--editor', nargs='?', type=str, default='editor',
+                    help="Specify editor to use, default is editor called by editor command")
+parser.add_argument('-v', '--verbose', action='store_true', help="Gives more verbose output")
+parser.add_argument('-g', '--default_gui', action='store_true', help="Use default system gui text editor")
+args = parser.parse_args()
+
+if args.default_gui:
+    # Gets default gui text editor vie xdg-mime
+    text_editor = str(subprocess.check_output(["xdg-mime", "query", "default", "text/plain"])).split('.')[0].strip("b'")
+else:
+    text_editor = args.editor  # Gets text editor passed from -e argument
+
+try:
+    # Gets list of flies from given path and naturally sorts them
+    file_list = natsorted(os.listdir(args.filepath))
+except Exception as e:
+    print(e)
+    raise SystemExit(0)
+
+tmp_dir = tempfile.mkdtemp()
+renames_file = 'renames'
+saved_umask = os.umask(0o077)
+path = os.path.join(tmp_dir, renames_file)
+check = False
+
+try:
+    # Creates a file named renames in temp dir and writes all file names to it
+    with open(path, mode='w+') as namer:
+        [namer.write(lista + "\n") for lista in file_list]
+        namer.seek(0)
+    try:
+        # Opens renames file in text editor
+        subprocess.Popen([text_editor, path]).wait()
+    except IOError as e:
+        print("Editor not found, pleas choose another editor using -e option")
+
+except IOError as e:
+    print("Rename file could not be created")
+else:
+    try:
+        # Reads edited renames file
+        with open(path, mode='r') as renamer:
+            namer_data = [line.rstrip() for line in renamer]
+
+    except IOError as e:
+        print('Rename file cant be read or edited')
+    else:
+        check = True
+finally:
+    try:
+        # Counts number of lines in renames file
+        line_counter = int(subprocess.check_output(['wc', '-l', path]).split()[0])
+    except Exception as e:
+        print("There was an error with calling wc -l command", e)
+    # Cleans up
+    os.remove(path)
+    os.umask(saved_umask)
+    os.rmdir(tmp_dir)
+
+if check is True:
+    # Checks if number of files and number of new file names (lines) is the same
+    if line_counter == len(file_list):
+        for i, name in enumerate(namer_data):
+            try:
+                # Changes name of a file if name is changed in renames file
+                if file_list[i] != name:
+                    os.rename(os.path.join(args.filepath, file_list[i]), os.path.join(args.filepath, name))
+                    if args.verbose:
+                        print(file_list[i], "-------->", name)
+            except PermissionError as e:
+                if e.errno == 13:
+                    print("You do not have permission to change file name, you can try using sudo")
+                    raise SystemExit(0)
+                else:
+                    print(e)
+            except IOError as e:
+                if e.errno == 30:
+                    print("Cant change file names on read only file system")
+                    raise SystemExit(0)
+                else:
+                    print(e)
+            except Exception as e:
+                print(e)
+    else:
+        print("Number of files and number of name lines do not match")
