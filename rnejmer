@@ -25,13 +25,22 @@ from natsort import natsorted
 
 
 def main():
+
+    if 'VISUAL' in os.environ:
+        edit_app = os.getenv('VISUAL')
+    elif 'EDITOR' in os.environ:
+        edit_app = os.getenv('EDITOR')
+    else:
+        edit_app = 'editor'
+
     # Setting up command line arguments
     parser = argparse.ArgumentParser(description="Renames files using a text editor")
     parser.add_argument("filepath", nargs='?', type=str, default=os.getcwd(), help="path of a folder")
-    parser.add_argument('-e', '--editor', nargs='?', type=str, default='editor',
+    parser.add_argument('-e', '--editor', nargs='?', type=str, default=edit_app,
                         help="Specify editor to use, default is editor called by editor command")
     parser.add_argument('-v', '--verbose', action='store_true', help="Gives more verbose output")
-    parser.add_argument('-g', '--default_gui', action='store_true', help="Use default system gui text editor")
+    parser.add_argument('-g', '--default_gui', action='store_true',
+                        help="Use default system gui text editor based on xdg")
     args = parser.parse_args()
 
     tmp_file_name_string = ''.join(random.choices(string.ascii_letters, k=3))
@@ -109,7 +118,7 @@ def main():
                 try:
                     # Changes name of a file if name is changed in renames file
                     if file_list[i] != name:
-                        # if two files swaped names it gives one of them temp name prefix
+                        # if two files swapped names it gives one of them temp name prefix
                         if name in namer_data:
                             os.rename(os.path.join(args.filepath, file_list[i]), os.path.join(
                                 args.filepath, tmp_file_name_string + name))
