@@ -34,3 +34,10 @@ INSTALLING
 
 #### DEB PACAGE
 If you are on Ubuntu or Ubuntu based distro(mint, pop_os, etc..) you can just download and install provided [deb package](https://github.com/rogvuc/rnejmer/releases). It will install rnejmer and take care of a dependency
+
+DISCLAIMER
+-
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
